@@ -9,8 +9,60 @@ st.set_page_config(page_title="CS2 Pro Team Analysis", layout="wide")
 # --- 数据载入 (直接复用你之前的 df) ---
 @st.cache_data
 def load_data():
-    # 这里放你之前整理好的完整 df 代码
-    # 为了演示简略，假设 df 已经存在
+    # --- 数据载入函数 ---
+@st.cache_data
+def load_data():
+    # 核心修复：在这里定义原始数据 raw_data
+    raw_data = {
+        'Team': [
+            'Vitality', 'Vitality', 'Vitality', 'Vitality', 'Vitality',
+            'NAVI', 'NAVI', 'NAVI', 'NAVI', 'NAVI',
+            'Astralis', 'Astralis', 'Astralis', 'Astralis', 'Astralis',
+            'The MongolZ', 'The MongolZ', 'The MongolZ', 'The MongolZ', 'The MongolZ',
+            'Aurora', 'Aurora', 'Aurora', 'Aurora', 'Aurora'
+        ],
+        'Player': [
+            'ZywOo', 'flameZ', 'Spinx', 'apEX', 'mezii',
+            'iM', 'w0nderful', 'Aleksib', 'jL', 'b1t',
+            'Staehr', 'jabbi', 'phzy', 'ryu', 'HooXi',
+            '910', 'mzinho', 'Techno', 'bLitz', 'cobrazera',
+            'deko', 'r3salt', 'Norwi', 'Lack1', 'KENSI'
+        ],
+        'Rating': [
+            1.30, 1.15, 1.14, 1.02, 1.03,
+            1.09, 1.07, 0.91, 1.10, 1.09,
+            1.11, 1.06, '--', '--', 0.84,
+            1.05, 1.04, 0.97, 0.95, '--',
+            1.15, 1.13, 1.05, 0.98, 1.10
+        ],
+        'Firepower': [92, 80, 75, 35, 51, 72, 53, 4, 86, 60, 85, 68, 74, 44, 6, 72, 50, 24, 28, 65, 86, 85, 62, 25, 78],
+        'Utility': [52, 54, 51, 89, 72, 35, 54, 89, 52, 51, 79, 48, 62, 32, 81, 60, 45, 46, 94, 35, 35, 56, 45, 91, 45],
+        'Entry': [56, 70, 42, 85, 24, 66, 28, 86, 90, 33, 62, 69, 22, 79, 52, 6, 52, 51, 42, 41, 36, 82, 52, 42, 66],
+        'AWP': [94, 1, 0, 1, 0, 0, 92, 0, 0, 2, 0, 0, 92, 0, 1, 91, 0, 0, 2, 7, 92, 0, 0, 2, 1],
+        'Clutch': [82, 35, 75, 31, 60, 32, 78, 51, 36, 79, 38, 50, 77, 48, 40, 66, 54, 38, 34, 42, 82, 35, 54, 34, 45]
+    }
+    
+    # 实例化 DataFrame
+    temp_df = pd.DataFrame(raw_data)
+    
+    # 数据清洗：处理 '--'
+    temp_df['Rating'] = pd.to_numeric(temp_df['Rating'], errors='coerce')
+    team_avg = temp_df.groupby('Team')['Rating'].transform('mean')
+    temp_df['Rating'] = temp_df['Rating'].fillna(team_avg)
+    
+    # 角色分类
+    def get_role(row):
+        if row['AWP'] > 80: return 'Sniper'
+        if row['Utility'] > 80: return 'Tactical/IGL'
+        if row['Entry'] > 70: return 'Entry Fragger'
+        return 'Rifler'
+    temp_df['Role'] = temp_df.apply(get_role, axis=1)
+    
+    return temp_df # 返回处理好的 DataFrame
+
+# 调用函数获取 df
+df = load_data()
+
     return df 
 
 df = load_data()
