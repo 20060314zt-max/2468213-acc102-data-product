@@ -35,7 +35,7 @@ CS2 Professional Players Data Analytics Pipeline
 
 6. Product Link / Demo
 • Live Demo: [https://cutesunday.streamlit.app]
-• GitHub Repository: [Insert your GitHub repo link]
+• GitHub Repository: (https://github.com/20060314zt-max/2468213-acc102-data-product)
 
 7. Limitations & Next Steps
 • Limitations: The current dataset is restricted to the World's Top 5 teams and does not include historical win rates or economic management (Economy) data.
