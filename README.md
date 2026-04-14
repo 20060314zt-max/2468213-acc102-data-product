@@ -38,7 +38,7 @@ CS2 Professional Players Data Analytics Pipeline
 
 ## 6. Product Link / Demo
 * **Live Demo**: [https://cutesunday.streamlit.app](https://cutesunday.streamlit.app)
-* **GitHub Repository**: [Your Link Here]
+* **GitHub Repository**: (https://github.com/20060314zt-max/2468213-acc102-data-product)
 
 ---
 
