@@ -55,7 +55,7 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 
 ## 6. Project Demo & Repository
 * **Interactive Dashboard**: (https://cutesunday.streamlit.app)
-* **Source Code**: [GitHub Repository URL](https://github.com/YourUsername/YourRepo)
+* **Source Code**: (https://github.com/20060314zt-max/2468213-acc102-data-product)
 * **Documentation**: Includes full Python source code and the logic behind the Combat Index weights.
 
 ---
