@@ -106,9 +106,9 @@ if st.session_state.page == 'home':
 
     tabs = st.tabs(["🔍 数据概览 & 清洗", "📊 分布分析", "📈 25人多维对比", "⚔️ Viz: Player Battles"])
         with tabs[0]:
-        st.subheader("Raw Data Inspection")
-        st.dataframe(df_raw, use_container_width=True, height=260)
-        st.error(f"⚠️ Anomaly Detected: Found {df_raw['Rating'].astype(str).str.contains('--').sum()} missing values marked as '--'.")
+     st.subheader("Raw Data Inspection")
+     st.dataframe(df_raw, use_container_width=True, height=260)
+     st.error(f"⚠️ Anomaly Detected: Found {df_raw['Rating'].astype(str).str.contains('--').sum()} missing values marked as '--'.")
 
         st.divider()
 
