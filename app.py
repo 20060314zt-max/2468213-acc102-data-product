@@ -106,22 +106,22 @@ if st.session_state.page == 'home':
 
     tabs = st.tabs(["🔍 数据概览 & 清洗", "📊 分布分析", "📈 25人多维对比", "⚔️ Viz: Player Battles"])
         with tabs[0]:
-     st.subheader("Raw Data Inspection")
-     st.dataframe(df_raw, use_container_width=True, height=260)
-     st.error(f"⚠️ Anomaly Detected: Found {df_raw['Rating'].astype(str).str.contains('--').sum()} missing values marked as '--'.")
+    st.subheader("Raw Data Inspection")
+    st.dataframe(df_raw, use_container_width=True, height=260)
+    st.error(f"⚠️ Anomaly Detected: Found {df_raw['Rating'].astype(str).str.contains('--').sum()} missing values marked as '--'.")
 
-        st.divider()
+    st.divider()
 
-        st.subheader("Cleaning Pipeline")
-        col1, col2 = st.columns(2)
+    st.subheader("Cleaning Pipeline")
+    col1, col2 = st.columns(2)
 
-        with col1:
-            st.success("Imputation Rule: missing values replaced by team averages.")
-            st.dataframe(df_filtered[['Player','Team','Rating','Impact','KAST_%','Role']].head(10))
+    with col1:
+        st.success("Imputation Rule: missing values replaced by team averages.")
+        st.dataframe(df_filtered[['Player','Team','Rating','Impact','KAST_%','Role']].head(10))
 
-        with col2:
-            st.info("Feature Engineering: Combat_Index built from multiple stats.")
-            st.dataframe(df_filtered.head(10))
+    with col2:
+        st.info("Feature Engineering: Combat_Index built from multiple stats.")
+        st.dataframe(df_filtered.head(10))
 
     with tabs[1]:
         col1, col2 = st.columns(2)
