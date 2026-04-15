@@ -25,7 +25,7 @@ def plot_radar_chart(player_series, categories, title, color):
     return fig
 
 # ==========================================
-# 2. 增强版数据处理流水线 (细化角色分类)
+# 2. 数据处理流水线
 # ==========================================
 @st.cache_data
 def get_final_data():
@@ -44,30 +44,25 @@ def get_final_data():
     for col in ['Rating', 'Impact']:
         df[col] = pd.to_numeric(df[col], errors='coerce')
         df[col] = df[col].fillna(df.groupby('Team')[col].transform('mean')).round(2)
-    
     df['Combat_Index'] = (df['Firepower']*0.4 + df['Entry']*0.3 + df['Clutch']*0.3).round(1)
     
-    # 更丰富的角色分类逻辑
     def set_detailed_role(r):
         if r['AWP'] > 75: return 'Sniper'
         if r['Entry'] > 70: return 'Entry Fragger'
         if r['Utility'] > 80: return 'IGL / Support'
         if r['Clutch'] > 70: return 'Clutch Minister'
         return 'Rifler'
-    
     df['Role'] = df.apply(set_detailed_role, axis=1)
     return df
 
 df_full = get_final_data()
 
 # ==========================================
-# 3. 侧边栏 (角色选项已增强)
+# 3. 侧边栏
 # ==========================================
 st.sidebar.image("https://cdn.akamai.steamstatic.com/apps/csgo/images/csgo_react/global/logo_cs_sm_global.svg", width=150)
 st.sidebar.header("⚙️ Global Filters")
 min_rating = st.sidebar.slider("Minimum Rating", 0.8, 1.4, 0.9, 0.01)
-
-# 自动获取增强后的所有角色
 available_roles = df_full['Role'].unique().tolist()
 selected_roles = st.sidebar.multiselect("Filter by Detailed Role", options=available_roles, default=available_roles)
 
@@ -91,21 +86,28 @@ if st.session_state.page == 'home':
             st.success("✅ Cleaned: Imputed missing Rating using Team Average.")
             st.info(f"✅ Categorized: Defined {len(available_roles)} unique player roles.")
         with col_p2:
-            st.dataframe(df_filtered[['Player', 'Team', 'Rating', 'Role']].head(5), use_container_width=True)
-        
-        # 宏观图表保持
-        c1, c2 = st.columns(2)
-        with c1:
-            fig_box, ax_box = plt.subplots(figsize=(8, 5))
-            sns.boxplot(data=df_filtered, x='Team', y='Rating', palette='Set3', ax=ax_box)
-            st.pyplot(fig_box)
-        with c2:
-            fig_heat, ax_heat = plt.subplots(figsize=(8, 5))
-            sns.heatmap(df_filtered[['Rating', 'Impact', 'Firepower', 'Utility', 'Entry', 'Clutch']].corr(), annot=True, cmap="mako", ax=ax_heat)
-            st.pyplot(fig_heat)
+            st.dataframe(df_filtered[['Player', 'Team', 'Rating', 'Role']].head(10), use_container_width=True)
 
-    # --- TAB 2: 深度选手横评 (图表大幅丰富) ---
+    # --- TAB 2: 深度选手横评 (重新布局) ---
     with tabs[1]:
+        st.header("📊 Global Performance Overview")
+        
+        # 1. 宏观分布 - 移至顶层，一行一图
+        st.subheader("Global Team Rating Spread")
+        fig_box, ax_box = plt.subplots(figsize=(12, 5))
+        sns.boxplot(data=df_filtered, x='Team', y='Rating', palette='Set3', ax=ax_box)
+        sns.swarmplot(data=df_filtered, x='Team', y='Rating', color=".25", size=5, ax=ax_box)
+        st.pyplot(fig_box)
+
+        st.subheader("Global Metric Correlation")
+        fig_heat, ax_heat = plt.subplots(figsize=(12, 5))
+        sns.heatmap(df_filtered[['Rating', 'Impact', 'Firepower', 'Utility', 'Entry', 'Clutch']].corr(), 
+                    annot=True, cmap="mako", ax=ax_heat, fmt=".2f")
+        st.pyplot(fig_heat)
+
+        st.divider()
+
+        # 2. 互动对比 - 每一图占一行
         st.header("⚔️ Multi-Player Battleground")
         all_players = df_filtered['Player'].tolist()
         comp_players = st.multiselect("Select Players to Compare:", options=all_players, default=all_players[:5])
@@ -113,50 +115,41 @@ if st.session_state.page == 'home':
         if len(comp_players) > 0:
             comp_df = df_filtered[df_filtered['Player'].isin(comp_players)].sort_values('Rating', ascending=False)
             
-            # 第一排：核心战力对比
-            col_chart1, col_chart2 = st.columns(2)
+            # --- 图表 1: 属性堆叠柱状图 ---
+            st.subheader("1. Tactical Attribute Stack")
+            melted = comp_df.melt(id_vars='Player', value_vars=['Firepower', 'Utility', 'Entry', 'Clutch'])
+            fig_bar, ax_bar = plt.subplots(figsize=(12, 6))
+            sns.barplot(data=melted, x='value', y='Player', hue='variable', palette='viridis', ax=ax_bar)
+            st.pyplot(fig_bar)
             
-            with col_chart1:
-                st.subheader("1. Tactical Attribute Stack")
-                # 堆叠柱状图：看选手能力总和与分布
-                melted = comp_df.melt(id_vars='Player', value_vars=['Firepower', 'Utility', 'Entry', 'Clutch'])
-                fig_bar, ax_bar = plt.subplots(figsize=(10, 7))
-                sns.barplot(data=melted, x='value', y='Player', hue='variable', palette='viridis', ax=ax_bar)
-                st.pyplot(fig_bar)
-            
-            with col_chart2:
-                st.subheader("2. Rating vs Impact Trend")
-                # 折线图：看 Rating 和 Impact 的差距，差距越大说明选手场上作用越超越面板数据
-                fig_line, ax_line = plt.subplots(figsize=(10, 7))
-                sns.lineplot(data=comp_df, x='Player', y='Rating', marker='o', label='Rating', color='blue', ax=ax_line)
-                sns.lineplot(data=comp_df, x='Player', y='Impact', marker='s', label='Impact', color='red', ax=ax_line)
-                plt.xticks(rotation=45)
-                plt.legend()
-                st.pyplot(fig_line)
-
             st.divider()
-            
-            # 第二排：定位分布与属性密度
-            col_chart3, col_chart4 = st.columns(2)
-            
-            with col_chart3:
-                st.subheader("3. Carry vs Team-Player (Quadrant)")
-                # 象限图：Firepower（carry能力） vs Utility（团队道具能力）
-                fig_scat, ax_scat = plt.subplots(figsize=(10, 7))
-                sns.scatterplot(data=comp_df, x='Firepower', y='Utility', hue='Player', s=300, palette='deep', ax=ax_scat)
-                # 画象限线
-                ax_scat.axhline(50, color='gray', linestyle='--')
-                ax_scat.axvline(50, color='gray', linestyle='--')
-                ax_scat.set_title("Top-Right = All-Rounders")
-                st.pyplot(fig_scat)
 
-            with col_chart4:
-                st.subheader("4. Combat Index Heatmap")
-                # 热力图对比：直观查看选手的短板
-                heat_data = comp_df.set_index('Player')[['Firepower', 'Utility', 'Entry', 'Clutch', 'Rating']]
-                fig_h2, ax_h2 = plt.subplots(figsize=(10, 7))
-                sns.heatmap(heat_data, annot=True, cmap="RdYlGn", ax=ax_h2)
-                st.pyplot(fig_h2)
+            # --- 图表 2: Rating vs Impact 趋势线 ---
+            st.subheader("2. Rating vs Impact Trend")
+            fig_line, ax_line = plt.subplots(figsize=(12, 5))
+            sns.lineplot(data=comp_df, x='Player', y='Rating', marker='o', label='Rating', color='royalblue', ax=ax_line)
+            sns.lineplot(data=comp_df, x='Player', y='Impact', marker='s', label='Impact', color='crimson', ax=ax_line)
+            plt.xticks(rotation=45)
+            st.pyplot(fig_line)
+            
+            st.divider()
+
+            # --- 图表 3: 象限分布图 ---
+            st.subheader("3. Carry vs Team-Player (Quadrant)")
+            fig_scat, ax_scat = plt.subplots(figsize=(12, 6))
+            sns.scatterplot(data=comp_df, x='Firepower', y='Utility', hue='Player', s=400, palette='deep', ax=ax_scat)
+            ax_scat.axhline(50, color='gray', linestyle='--')
+            ax_scat.axvline(50, color='gray', linestyle='--')
+            st.pyplot(fig_scat)
+            
+            st.divider()
+
+            # --- 图表 4: 性能热力矩阵 ---
+            st.subheader("4. Combat Index Heatmap")
+            heat_data = comp_df.set_index('Player')[['Firepower', 'Utility', 'Entry', 'Clutch', 'Rating']]
+            fig_h2, ax_h2 = plt.subplots(figsize=(12, 6))
+            sns.heatmap(heat_data, annot=True, cmap="RdYlGn", ax=ax_h2, cbar=False)
+            st.pyplot(fig_h2)
         else:
             st.warning("Please select players to activate the battleground.")
 
@@ -165,10 +158,8 @@ if st.session_state.page == 'home':
         st.header("🛡️ Team Deep Dive")
         teams = df_full['Team'].unique()
         team_cols = st.columns(len(teams))
-        
         for i, t in enumerate(teams):
             with team_cols[i]:
-                # 白色卡片 UI
                 st.markdown(f"""
                     <div style='text-align:center; padding:15px; border-radius:10px; 
                     background-color:white; color:#1e1e2e; border: 1px solid #ddd;
@@ -177,7 +168,6 @@ if st.session_state.page == 'home':
                         <p style='font-size:0.8em; color:#666;'>Pro Roster</p >
                     </div>
                 """, unsafe_allow_html=True)
-                
                 if st.button(f"Enter {t}", key=f"btn_{t}", use_container_width=True):
                     st.session_state.selected_team = t
                     st.session_state.page = 'detail'
@@ -212,6 +202,7 @@ elif st.session_state.page == 'detail':
         sel_p = st.selectbox("Select Player:", t_data['Player'].tolist())
         p_stats = t_data[t_data['Player'] == sel_p].iloc[0]
         st.pyplot(plot_radar_chart(p_stats, ['Firepower', 'Utility', 'Entry', 'Clutch', 'AWP'], f"{sel_p} Stats", "#e74c3c"))
+
 
 
 
