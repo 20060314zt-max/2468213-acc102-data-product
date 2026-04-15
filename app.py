@@ -58,9 +58,10 @@ def get_final_data():
 df_full = get_final_data()
 
 # ==========================================
-# 3. 侧边栏
+# 3. 侧边栏 (更换了更稳定的 Logo 链接)
 # ==========================================
-st.sidebar.image("https://cdn.akamai.steamstatic.com/apps/csgo/images/csgo_react/global/logo_cs_sm_global.svg", width=150)
+# 使用官方 PNG 链接，避免 SVG 渲染或加载失败问题
+st.sidebar.image("https://www.counter-strike.net/static/images/links/cs2.png", width=180)
 st.sidebar.header("⚙️ Global Filters")
 min_rating = st.sidebar.slider("Minimum Rating", 0.8, 1.4, 0.9, 0.01)
 available_roles = df_full['Role'].unique().tolist()
@@ -88,11 +89,11 @@ if st.session_state.page == 'home':
         with col_p2:
             st.dataframe(df_filtered[['Player', 'Team', 'Rating', 'Role']].head(10), use_container_width=True)
 
-    # --- TAB 2: 深度选手横评 (重新布局) ---
+    # --- TAB 2: 深度选手横评 (宏观分布 + 选手对比，一行一图) ---
     with tabs[1]:
         st.header("📊 Global Performance Overview")
         
-        # 1. 宏观分布 - 移至顶层，一行一图
+        # 宏观分布图
         st.subheader("Global Team Rating Spread")
         fig_box, ax_box = plt.subplots(figsize=(12, 5))
         sns.boxplot(data=df_filtered, x='Team', y='Rating', palette='Set3', ax=ax_box)
@@ -107,7 +108,7 @@ if st.session_state.page == 'home':
 
         st.divider()
 
-        # 2. 互动对比 - 每一图占一行
+        # 选手互动对比
         st.header("⚔️ Multi-Player Battleground")
         all_players = df_filtered['Player'].tolist()
         comp_players = st.multiselect("Select Players to Compare:", options=all_players, default=all_players[:5])
@@ -115,7 +116,7 @@ if st.session_state.page == 'home':
         if len(comp_players) > 0:
             comp_df = df_filtered[df_filtered['Player'].isin(comp_players)].sort_values('Rating', ascending=False)
             
-            # --- 图表 1: 属性堆叠柱状图 ---
+            # 1. 属性堆叠图
             st.subheader("1. Tactical Attribute Stack")
             melted = comp_df.melt(id_vars='Player', value_vars=['Firepower', 'Utility', 'Entry', 'Clutch'])
             fig_bar, ax_bar = plt.subplots(figsize=(12, 6))
@@ -124,7 +125,7 @@ if st.session_state.page == 'home':
             
             st.divider()
 
-            # --- 图表 2: Rating vs Impact 趋势线 ---
+            # 2. Rating vs Impact 趋势
             st.subheader("2. Rating vs Impact Trend")
             fig_line, ax_line = plt.subplots(figsize=(12, 5))
             sns.lineplot(data=comp_df, x='Player', y='Rating', marker='o', label='Rating', color='royalblue', ax=ax_line)
@@ -134,7 +135,7 @@ if st.session_state.page == 'home':
             
             st.divider()
 
-            # --- 图表 3: 象限分布图 ---
+            # 3. 象限分布
             st.subheader("3. Carry vs Team-Player (Quadrant)")
             fig_scat, ax_scat = plt.subplots(figsize=(12, 6))
             sns.scatterplot(data=comp_df, x='Firepower', y='Utility', hue='Player', s=400, palette='deep', ax=ax_scat)
@@ -144,7 +145,7 @@ if st.session_state.page == 'home':
             
             st.divider()
 
-            # --- 图表 4: 性能热力矩阵 ---
+            # 4. 热力矩阵
             st.subheader("4. Combat Index Heatmap")
             heat_data = comp_df.set_index('Player')[['Firepower', 'Utility', 'Entry', 'Clutch', 'Rating']]
             fig_h2, ax_h2 = plt.subplots(figsize=(12, 6))
@@ -153,7 +154,7 @@ if st.session_state.page == 'home':
         else:
             st.warning("Please select players to activate the battleground.")
 
-    # --- TAB 3: 战队入口 (底色白色) ---
+    # --- TAB 3: 战队入口 (白底卡片) ---
     with tabs[2]:
         st.header("🛡️ Team Deep Dive")
         teams = df_full['Team'].unique()
@@ -202,6 +203,7 @@ elif st.session_state.page == 'detail':
         sel_p = st.selectbox("Select Player:", t_data['Player'].tolist())
         p_stats = t_data[t_data['Player'] == sel_p].iloc[0]
         st.pyplot(plot_radar_chart(p_stats, ['Firepower', 'Utility', 'Entry', 'Clutch', 'AWP'], f"{sel_p} Stats", "#e74c3c"))
+
 
 
 
