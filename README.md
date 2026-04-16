@@ -1,41 +1,36 @@
-CS2 Professional Players Data Analytics Pipeline
-1. Problem & Target User
-• Problem Statement: Professional esports (CS2) match data is often voluminous and unstructured. Raw datasets frequently contain missing values or inconsistent formatting (e.g., string placeholders like --), making comparative analysis difficult.
-• Target User: Esports coaches, professional analysts, or hardcore players who require a centralized tool to compare the individual performance of the 25 core players from global top-tier teams on a unified baseline.
-2. Data
-• Source: Simulated data from elite global CS2 professional circuits (including Vitality, NAVI, Astralis, The MongolZ, and Aurora).
-• Retrieval Date: 2026-04-14.
-• Key Fields:
-• Player/Team: Basic identification credentials.
-• Rating: Core performance score (initially containing missing data denoted as --).
-• Technical Metrics: Firepower, Utility, Entry, Clutch, Opening, and AWP usage levels.
-3. Methods
-1.	Data Exploration: Identifying anomalous placeholders (--) within raw data and detecting data type mismatches (Object vs. Float).
-2.	Data Cleaning: Using Python pandas to convert anomalies into NaN and performing objective imputation based on Team Average Rating.
-3.	Feature Engineering:
-• Combat_Index: A weighted score blending firepower, entry-fragging, and clutching capabilities.
-• Automated Role Labeling: Identifying "Snipers" or "Tactical Leads" based on AWP and Utility patterns.
-• Z-Score Normalization: Calculating standard deviation of Ratings relative to the global sample mean.
-4.	Data Visualization: Constructing a dual-layer interactive interface using Streamlit, featuring dynamic bar charts and multi-dimensional scatter matrices.
-4. Key Findings
-• Global Benchmarking: Facilitated a direct cross-team horizontal comparison of all 25 players, breaking the traditional roster-only view.
-• Data Correction: Successfully restored 12% of missing data points through team-mean imputation, providing more reliable statistical rankings.
-• Role Insight: The visualization matrix clearly distinguishes between "High Firepower" fraggers and "Tactical Support" players.
-• Elite Performance: Identified top-tier star players whose performances significantly exceed the global mean via Z-Score analysis.
-5. How to Run
-1.	Ensure Python 3.8+ is installed.
-2.	Install dependencies:
-pip install streamlit pandas matplotlib seaborn numpy
-3.	Execute in terminal:
-streamlit run app.py
-4.	Access the local port via browser (default: http://localhost:8501).
-6. Product Link / Demo
-• Live Demo: https://cutesunday.streamlit.app
-• GitHub Repository: [Your GitHub Repository URL Here]
-7. Limitations & Next Steps
-• Limitations: The current dataset is restricted to the World's Top 5 teams and does not include historical win rates or economic management (Economy) data.
-• Next Steps:
-• Integrate Real-Time APIs for dynamic data updates.
-• Develop a Human Resource Efficiency module to assess team composition stability.
-• Implement advanced Radar Charts for multi-dimensional player attribute visualization.
+# 🏆 CS2 Pro Analytics: Global Performance Dashboard
+
+## 1. Problem & User
+The project addresses the fragmentation and missing values in CS2 professional player statistics, providing **esports coaches and scouts** with a normalized, interactive platform to compare player impact objectively.
+
+## 2. Data
+* **Source**: High-fidelity professional-tier performance data (Simulated/Scraped).
+* **Access Date**: April 2026.
+* **Key Fields**: 
+    1. `Rating 2.1`: Overall performance benchmark.
+    2. `Impact`: Round-deciding contribution.
+    3. `Firepower`: Raw aiming proficiency.
+    4. `Utility`: Tactical support impact.
+    5. `Entry`: First-kill aggression.
+    6. `Clutch`: 1-vs-X win probability.
+
+## 3. Methods
+1. **Data Cleaning**: Implemented **Team-Based Mean Imputation** to fill missing values using teammate averages, ensuring a complete dataset for 25 elite players.
+2. **Feature Engineering**: Defined a weighted **Combat Index** to quantify aggressive contribution:
+   $$Combat\_Index = (Firepower \times 0.4) + (Entry \times 0.3) + (Clutch \times 0.3)$$
+3. **Role Classification**: Developed algorithmic logic to assign players to roles like `Sniper`, `Rifler`, or `IGL / Support` based on hardware and utility thresholds.
+4. **Interactive Visualization**: Utilized **Streamlit** for the dashboard interface, with **Seaborn** and **Matplotlib** for global distribution and radar chart analytics.
+
+## 4. Key Findings
+* **Data Recovery**: Successfully restored 12% of missing data via imputation, uncovering the performance metrics of previously "invisible" players.
+* **Outlier Analysis**: Boxplot analysis identifies "Superstars" like *ZywOo* who operate significantly above the global average interquartile range.
+* **Role Trade-offs**: Heatmap correlations confirm a negative relationship between `Utility` and `Entry` scores, quantifying the tactical sacrifices of support players.
+* **Global Benchmarking**: The dashboard effectively visualizes team-level performance deltas (Avg Rating & Firepower) against global league averages using real-time delta arrows.
+
+## 5. How to run
+1. **Environment Setup**: Ensure Python 3.9+ is installed.
+2. **Run use this code in terminal**:
+   ```bash
+   python -m streamlit run app.py
+
 
