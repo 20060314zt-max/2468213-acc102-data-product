@@ -47,7 +47,7 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
     ```
 3.  **Local Launch**:
     ```bash
-    streamlit run app.py
+    python -m streamlit run app.py
     ```
 4.  **Network Access**: The dashboard will automatically serve on `http://localhost:8501`.
 
@@ -63,7 +63,6 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 ## 7. Limitations & Roadmap
 * **Current Limitations**: 
     * The model currently focuses exclusively on the **Global Top 5 Teams**.
-    * Economic data (Equipment Value vs. Round Outcome) is not yet integrated.
 * **Future Roadmap**:
     1.  **Real-Time Integration**: Connecting to the HLTV/PandasScore API for live tournament updates.
     2.  **Advanced Visualization**: Adding interactive Radar Charts to compare two players head-to-head.
