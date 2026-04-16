@@ -4,7 +4,14 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 
 ---
 
-## 1. Problem & Target User
+## 1. Project Demo & Repository
+* **Interactive Dashboard**: (https://cutesunday.streamlit.app)
+* **Source Code**: (https://github.com/20060314zt-max/2468213-acc102-data-product)
+* **Documentation**: Includes full Python source code and the logic behind the Combat Index weights.
+
+---
+
+## 2. Problem & Target User
 * **The Problem**: In the high-stakes world of CS2 esports, raw performance data is often fragmented across multiple platforms. Inconsistencies like missing values (`--`) and diverse data formats make it impossible for teams to compare players on a truly "level playing field."
 * **Target User**: 
     * **Pro Coaches**: Looking to benchmark their roster against global rivals.
@@ -13,7 +20,7 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 
 ---
 
-## 2. Data Specifications
+## 3. Data Specifications
 * **Dataset Scope**: High-fidelity simulated data covering the world's elite teams as of April 2026: **Vitality, NAVI, Astralis, The MongolZ, and Aurora**.
 * **Key Attributes**:
     * **Primary Metrics**: `Rating 2.1` (the gold standard of CS2 performance).
@@ -22,7 +29,7 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 
 ---
 
-## 3. Methods & Pipeline Architecture
+## 4. Methods & Pipeline Architecture
 1.  **Stage 1: Exploration**: Automated scanning for "Dirty Data" (Strings in numeric columns).
 2.  **Stage 2: Intelligent Cleaning**: Instead of deleting rows with missing Ratings, we apply **Team-Based Mean Imputation**. This uses the collective performance of the player's teammates to estimate missing values, preserving the sample size of 25.
 3.  **Stage 3: Feature Engineering**:
@@ -32,14 +39,14 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
 
 ---
 
-## 4. Key Strategic Findings
+## 5. Key Strategic Findings
 * **Performance Equalization**: By restoring 12% of missing data via imputation, we unlocked a complete ranking for players like *phzy* and *ryu* who were previously "invisible" due to data gaps.
 * **The "Star" Disparity**: Z-Score analysis revealed that elite players (e.g., *ZywOo*) operate **2.5+ standard deviations** above the average, quantifying their "game-breaking" potential.
 * **Role Clustering**: Scatter matrix analysis confirmed a negative correlation between high `Utility` and `Entry` scores, highlighting the distinct sacrifice tactical leaders make for their team's entry fraggers.
 
 ---
 
-## 5. Deployment & Execution
+## 6. Deployment & Execution
 1.  **Environment**: Requires **Python 3.8** or higher.
 2.  **Dependency Installation**:
     ```bash
@@ -50,13 +57,6 @@ A robust, end-to-end data science project evaluating the top 25 global CS2 playe
     python -m streamlit run app.py
     ```
 4.  **Network Access**: The dashboard will automatically serve on `http://localhost:8501`.
-
----
-
-## 6. Project Demo & Repository
-* **Interactive Dashboard**: (https://cutesunday.streamlit.app)
-* **Source Code**: (https://github.com/20060314zt-max/2468213-acc102-data-product)
-* **Documentation**: Includes full Python source code and the logic behind the Combat Index weights.
 
 ---
 
